@@ -1,299 +1,113 @@
-<!DOCTYPE html>
-<html lang="id">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Produk</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body>
-
-<div class="container mt-5">
-
-    <div class="card shadow">
-
-        <div class="card-header bg-warning">
-            <h3 class="mb-0">Edit Produk</h3>
-        </div>
-
-        <div class="card-body">
-
-            <form action="<?= BASE_URL; ?>product/update/<?= $product['id']; ?>"
-                  method="POST"
-                  enctype="multipart/form-data">
-
-                <!-- Nama Produk -->
-                <div class="mb-3">
-                    <label class="form-label">Nama Produk</label>
-
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="name"
-                        name="name"
-                        value="<?= htmlspecialchars($product['name']); ?>"
-                        required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Slug</label>
-
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="slug"
-                        name="slug"
-                        value="<?= htmlspecialchars($product['slug']); ?>"
-                        readonly>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Kategori</label>
-
-                    <select
-                        class="form-select"
-                        name="category_id"
-                        required>
-
-                        <?php foreach($categories as $category): ?>
-
-                            <option
-                                value="<?= $category['id']; ?>"
-                                <?= ($category['id'] == $product['category_id']) ? 'selected' : ''; ?>>
-
-                                <?= htmlspecialchars($category['name']); ?>
-
-                            </option>
-
-                        <?php endforeach; ?>
-
-                    </select>
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">Harga</label>
-
-                    <input
-                        type="number"
-                        class="form-control"
-                        name="price"
-                        min="0"
-                        value="<?= $product['price']; ?>"
-                        required>
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">Stock</label>
-
-                    <input
-                        type="number"
-                        class="form-control"
-                        name="stock"
-                        min="0"
-                        value="<?= $product['stock']; ?>"
-                        required>
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-
-                        Berat (gram)
-
-                    </label>
-
-                    <input
-                        type="number"
-                        class="form-control"
-                        name="weight"
-                        value="<?= $product['weight']; ?>"
-                        required>
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-
-                        Status Produk
-
-                    </label>
-
-                    <select
-                        name="is_active"
-                        class="form-select">
-
-                        <option
-                            value="1"
-                            <?= $product['is_active']==1 ? 'selected' : ''; ?>>
-
-                            Aktif
-
-                        </option>
-
-                        <option
-                            value="0"
-                            <?= $product['is_active']==0 ? 'selected' : ''; ?>>
-
-                            Tidak Aktif
-
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-
-                        Deskripsi
-
-                    </label>
-
-                    <textarea
-                        class="form-control"
-                        rows="5"
-                        name="description"
-                        required><?= htmlspecialchars($product['description']); ?></textarea>
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-
-                        Gambar Saat Ini
-
-                    </label>
-
-                    <br>
-
-                    <?php if(!empty($product['image'])): ?>
-
-                        <img
-                            src="<?= BASE_URL; ?>../storage/produk/<?= $product['image']; ?>"
-                            class="img-thumbnail"
-                            width="220"
-                            id="oldPreview">
-
-                    <?php else: ?>
-
-                        <p class="text-muted">
-
-                            Belum ada gambar.
-
-                        </p>
-
-                    <?php endif; ?>
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-
-                        Ganti Gambar (Opsional)
-
-                    </label>
-
-                    <input
-                        type="file"
-                        name="image"
-                        id="image"
-                        class="form-control"
-                        accept=".jpg,.jpeg,.png,.webp">
-
-                    <small class="text-muted">
-
-                        Kosongkan jika tidak ingin mengganti gambar.
-
-                    </small>
-
-                </div>
-
-                <div class="mb-3">
-
-                    <img
-                        id="preview"
-                        src=""
-                        width="220"
-                        class="img-thumbnail d-none">
-
-                </div>
-
-                <div class="d-flex justify-content-between">
-
-                    <a
-                        href="<?= BASE_URL; ?>product"
-                        class="btn btn-secondary">
-
-                        Kembali
-
-                    </a>
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary">
-
-                        Update Produk
-
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
+<div class="page-header">
+    <div>
+        <h1>Edit Produk</h1>
+        <p>Perbarui informasi produk, stok, dan gambar bila diperlukan.</p>
     </div>
+    <a class="btn btn-secondary" href="<?= BASE_URL ?>index.php?url=product">Kembali</a>
+</div>
 
+<div class="content-card">
+    <form action="<?= BASE_URL ?>index.php?url=product/update/<?= (int) $product['id'] ?>" method="POST" enctype="multipart/form-data">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="name">Nama Produk</label>
+                <input type="text" id="name" name="name" value="<?= htmlspecialchars($product['name']) ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="slug">Slug</label>
+                <input type="text" id="slug" name="slug" value="<?= htmlspecialchars($product['slug']) ?>" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="category_id">Kategori</label>
+                <select id="category_id" name="category_id" required>
+                    <?php foreach ($categories as $category): ?>
+                        <option value="<?= (int) $category['id'] ?>" <?= (int) $category['id'] === (int) $product['category_id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($category['name']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Harga</label>
+                <input type="number" id="price" name="price" min="0" value="<?= (float) $product['price'] ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="stock">Stok</label>
+                <input type="number" id="stock" name="stock" min="0" value="<?= (int) $product['stock'] ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="weight">Berat (gram)</label>
+                <input type="number" id="weight" name="weight" min="1" value="<?= (int) $product['weight'] ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="is_active">Status Produk</label>
+                <select id="is_active" name="is_active">
+                    <option value="1" <?= (int) $product['is_active'] === 1 ? 'selected' : '' ?>>Aktif</option>
+                    <option value="0" <?= (int) $product['is_active'] === 0 ? 'selected' : '' ?>>Tidak Aktif</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Ganti Gambar</label>
+                <input type="file" name="image" id="image" accept=".jpg,.jpeg,.png,.webp">
+                <div class="muted-text">Kosongkan jika tidak ingin mengganti gambar.</div>
+            </div>
+
+            <div class="form-group form-group-full">
+                <label for="description">Deskripsi</label>
+                <textarea id="description" rows="5" name="description" required><?= htmlspecialchars($product['description']) ?></textarea>
+            </div>
+
+            <div class="form-group form-group-full">
+                <label>Gambar Saat Ini</label>
+                <?php if (!empty($product['image'])): ?>
+                    <img id="oldPreview" src="<?= UPLOAD_URL . htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>" style="max-width: 220px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <?php else: ?>
+                    <div class="muted-text">Belum ada gambar.</div>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-group form-group-full">
+                <img id="preview" src="" alt="Preview gambar baru" style="max-width: 220px; display: none; border-radius: 12px; border: 1px solid #e2e8f0;">
+            </div>
+        </div>
+
+        <div class="page-actions">
+            <a class="btn btn-secondary" href="<?= BASE_URL ?>index.php?url=product">Batal</a>
+            <button type="submit" class="btn btn-primary">Update Produk</button>
+        </div>
+    </form>
 </div>
 
 <script>
-
 const nama = document.getElementById("name");
 const slug = document.getElementById("slug");
-
-nama.addEventListener("keyup", function(){
-
-    let value = this.value.toLowerCase();
-
-    value = value.replace(/[^a-z0-9]+/g,"-");
-
-    value = value.replace(/^-+|-+$/g,"");
-
-    slug.value = value;
-
-});
-
 const image = document.getElementById("image");
 const preview = document.getElementById("preview");
 
-image.addEventListener("change", function(){
-
-    const file = this.files[0];
-
-    if(file){
-
-        preview.src = URL.createObjectURL(file);
-
-        preview.classList.remove("d-none");
-
-    }
-
+nama.addEventListener("keyup", function () {
+    let value = this.value.toLowerCase();
+    value = value.replace(/[^a-z0-9]+/g, "-");
+    value = value.replace(/^-+|-+$/g, "");
+    slug.value = value;
 });
 
+image.addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (!file) {
+        preview.style.display = "none";
+        preview.removeAttribute("src");
+        return;
+    }
+
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+});
 </script>
-
-</body>
-</html>
-

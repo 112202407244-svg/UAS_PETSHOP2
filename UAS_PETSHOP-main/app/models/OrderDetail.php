@@ -17,7 +17,7 @@ class OrderDetail extends Model
                     ON od.product_id = p.id
                 ORDER BY od.id DESC";
 
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->getConnection()->prepare($sql);
         $stmt->execute();
 
         return $stmt->fetchAll();
@@ -25,7 +25,7 @@ class OrderDetail extends Model
 
     public function find($id)
     {
-        $stmt = $this->db->prepare("
+        $stmt = $this->db->getConnection()->prepare("
             SELECT *
             FROM order_details
             WHERE id = ?
@@ -46,7 +46,7 @@ class OrderDetail extends Model
                     ON od.product_id = p.id
                 WHERE od.order_id = ?";
 
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->getConnection()->prepare($sql);
         $stmt->execute([$orderId]);
 
         return $stmt->fetchAll();
@@ -68,7 +68,7 @@ class OrderDetail extends Model
                     ?, ?, ?, ?, ?, ?
                 )";
 
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->getConnection()->prepare($sql);
 
         return $stmt->execute([
             $data['order_id'],
@@ -82,7 +82,7 @@ class OrderDetail extends Model
 
     public function deleteByOrder($orderId)
     {
-        $stmt = $this->db->prepare("
+        $stmt = $this->db->getConnection()->prepare("
             DELETE FROM order_details
             WHERE order_id = ?
         ");
@@ -92,7 +92,7 @@ class OrderDetail extends Model
 
     public function delete($id)
     {
-        $stmt = $this->db->prepare("
+        $stmt = $this->db->getConnection()->prepare("
             DELETE FROM order_details
             WHERE id = ?
         ");
@@ -102,7 +102,7 @@ class OrderDetail extends Model
 
     public function totalItem($orderId)
     {
-        $stmt = $this->db->prepare("
+        $stmt = $this->db->getConnection()->prepare("
             SELECT SUM(qty) AS total
             FROM order_details
             WHERE order_id = ?
@@ -117,7 +117,7 @@ class OrderDetail extends Model
 
     public function totalPrice($orderId)
     {
-        $stmt = $this->db->prepare("
+        $stmt = $this->db->getConnection()->prepare("
             SELECT SUM(subtotal) AS total
             FROM order_details
             WHERE order_id = ?
@@ -130,4 +130,3 @@ class OrderDetail extends Model
         return $result['total'] ?? 0;
     }
 }
-

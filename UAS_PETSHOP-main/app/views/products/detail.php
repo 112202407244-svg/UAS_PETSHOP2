@@ -1,185 +1,76 @@
-<!DOCTYPE html>
-<html lang="id">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Produk</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body>
-
-<div class="container mt-5">
-
-    <div class="card shadow">
-
-        <div class="card-header bg-info text-white">
-            <h3 class="mb-0">Detail Produk</h3>
-        </div>
-
-        <div class="card-body">
-
-            <div class="row">
-
-                <div class="col-md-4 text-center">
-
-                    <?php if (!empty($product['image'])) : ?>
-
-                        <img
-                            src="<?= BASE_URL; ?>../storage/produk/<?= htmlspecialchars($product['image']); ?>"
-                            class="img-fluid rounded border"
-                            alt="<?= htmlspecialchars($product['name']); ?>">
-
-                    <?php else : ?>
-
-                        <img
-                            src="<?= BASE_URL; ?>assets/images/no-image.png"
-                            class="img-fluid rounded border"
-                            alt="Tidak Ada Gambar">
-
-                    <?php endif; ?>
-
-                </div>
-
-                <div class="col-md-8">
-
-                    <table class="table table-bordered">
-
-                        <tr>
-                            <th width="30%">ID Produk</th>
-                            <td><?= $product['id']; ?></td>
-                        </tr>
-
-                        <tr>
-                            <th>Nama Produk</th>
-                            <td><?= htmlspecialchars($product['name']); ?></td>
-                        </tr>
-
-                        <tr>
-                            <th>Slug</th>
-                            <td><?= htmlspecialchars($product['slug']); ?></td>
-                        </tr>
-
-                        <tr>
-                            <th>Kategori</th>
-                            <td><?= htmlspecialchars($product['category_name']); ?></td>
-                        </tr>
-
-                        <tr>
-                            <th>Harga</th>
-                            <td>
-                                Rp <?= number_format($product['price'], 0, ',', '.'); ?>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>Stok</th>
-                            <td><?= $product['stock']; ?></td>
-                        </tr>
-
-                        <tr>
-                            <th>Berat</th>
-                            <td><?= number_format($product['weight']); ?> gram</td>
-                        </tr>
-
-                        <tr>
-                            <th>Status</th>
-
-                            <td>
-
-                                <?php if($product['is_active']) : ?>
-
-                                    <span class="badge bg-success">
-
-                                        Aktif
-
-                                    </span>
-
-                                <?php else : ?>
-
-                                    <span class="badge bg-danger">
-
-                                        Tidak Aktif
-
-                                    </span>
-
-                                <?php endif; ?>
-
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <th>Deskripsi</th>
-
-                            <td>
-
-                                <?= nl2br(htmlspecialchars($product['description'])); ?>
-
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <th>Dibuat</th>
-
-                            <td>
-
-                                <?= date('d-m-Y H:i', strtotime($product['created_at'])); ?>
-
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <th>Terakhir Diubah</th>
-
-                            <td>
-
-                                <?= date('d-m-Y H:i', strtotime($product['updated_at'])); ?>
-
-                            </td>
-
-                        </tr>
-
-                    </table>
-
-                    <div class="mt-4">
-
-                        <a
-                            href="<?= BASE_URL; ?>product"
-                            class="btn btn-secondary">
-
-                            Kembali
-
-                        </a>
-
-                        <a
-                            href="<?= BASE_URL; ?>product/edit/<?= $product['id']; ?>"
-                            class="btn btn-warning">
-
-                            Edit
-
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
+<?php $isAdmin = (($_SESSION['user_role'] ?? '') === 'admin'); ?>
+
+<div class="page-header">
+    <div>
+        <h1>Detail Produk</h1>
+        <p>Informasi lengkap produk dan status ketersediaannya.</p>
     </div>
-
+    <div class="page-actions">
+        <a class="btn btn-secondary" href="<?= BASE_URL ?>index.php?url=product">Kembali</a>
+        <?php if ($isAdmin): ?>
+            <a class="btn btn-primary" href="<?= BASE_URL ?>index.php?url=product/edit/<?= (int) $product['id'] ?>">Edit Produk</a>
+        <?php endif; ?>
+    </div>
 </div>
 
-</body>
+<div class="content-card">
+    <div style="display:grid; grid-template-columns:minmax(220px, 320px) minmax(0, 1fr); gap:24px; align-items:start;">
+        <div>
+            <?php if (!empty($product['image'])): ?>
+                <img src="<?= UPLOAD_URL . htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>" style="width:100%; border-radius:16px; border:1px solid #e2e8f0;">
+            <?php else: ?>
+                <div class="product-thumb-placeholder" style="min-height:280px; display:flex; align-items:center; justify-content:center; border:1px solid #e2e8f0; border-radius:16px;">
+                    Tidak ada gambar
+                </div>
+            <?php endif; ?>
+        </div>
 
-</html>
+        <div class="summary-list">
+            <div>
+                <span>ID Produk</span>
+                <strong><?= (int) $product['id'] ?></strong>
+            </div>
+            <div>
+                <span>Nama Produk</span>
+                <strong><?= htmlspecialchars($product['name']) ?></strong>
+            </div>
+            <div>
+                <span>Slug</span>
+                <strong><?= htmlspecialchars($product['slug']) ?></strong>
+            </div>
+            <div>
+                <span>Kategori</span>
+                <strong><?= htmlspecialchars($product['category_name'] ?? '-') ?></strong>
+            </div>
+            <div>
+                <span>Harga</span>
+                <strong>Rp <?= number_format((float) $product['price'], 0, ',', '.') ?></strong>
+            </div>
+            <div>
+                <span>Stok</span>
+                <strong><?= (int) $product['stock'] ?></strong>
+            </div>
+            <div>
+                <span>Berat</span>
+                <strong><?= number_format((int) $product['weight'], 0, ',', '.') ?> gram</strong>
+            </div>
+            <div>
+                <span>Status</span>
+                <strong><?= (int) $product['is_active'] === 1 ? 'Aktif' : 'Tidak Aktif' ?></strong>
+            </div>
+            <div>
+                <span>Dibuat</span>
+                <strong><?= date('d-m-Y H:i', strtotime($product['created_at'])) ?></strong>
+            </div>
+            <div>
+                <span>Terakhir Diubah</span>
+                <strong><?= date('d-m-Y H:i', strtotime($product['updated_at'])) ?></strong>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="content-card">
+    <h2 class="section-title">Deskripsi</h2>
+    <div><?= nl2br(htmlspecialchars($product['description'])) ?></div>
+</div>

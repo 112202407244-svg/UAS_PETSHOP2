@@ -19,7 +19,8 @@ class Model
     public function getById(int $id): array|false
     {
         return $this->db->fetchOne(
-            "SELECT * FROM {$this->table} WHERE {$this->primaryKey} = ?", ['$id']
+            "SELECT * FROM {$this->table} WHERE {$this->primaryKey} = ?",
+            [$id]
         );
     }
 
@@ -43,7 +44,8 @@ class Model
         $values[] = $id;
 
         return $this->db->execute(
-            "UPDATE {$this->table} SET {$setParts} WHERE {$this->primaryKey} = ?", [$id]
+            "UPDATE {$this->table} SET {$setParts} WHERE {$this->primaryKey} = ?",
+            $values
         );
     }
 
@@ -62,7 +64,7 @@ class Model
         return (int) ($result['total'] ?? 0);
     }
 
-    public function where(string $condition, array $parans = []): array
+    public function where(string $condition, array $params = []): array
     {
         return $this->db->fetchAll(
             "SELECT * FROM {$this->table} WHERE {$condition}", $params
@@ -84,4 +86,3 @@ class Model
         $this->db->rollBack();
     }
 }
-

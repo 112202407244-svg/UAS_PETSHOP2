@@ -24,9 +24,13 @@ class Product extends Model
     public function find($id)
     {
         $stmt = $this->db->getConnection()->prepare("
-            SELECT *
-            FROM products
-            WHERE id = ?
+            SELECT
+                p.*,
+                c.name AS category_name
+            FROM products p
+            JOIN categories c
+                ON p.category_id = c.id
+            WHERE p.id = ?
         ");
 
         $stmt->execute([$id]);
@@ -49,10 +53,8 @@ class Product extends Model
 
     public function store($data, $file)
     {
-
         $image = $this->uploadImage($file);
-
-        if($image == false){
+        if ($image === false) {
             return false;
         }
 
@@ -78,7 +80,6 @@ class Product extends Model
         $stmt = $this->db->getConnection()->prepare($sql);
 
         return $stmt->execute([
-
             $data['category_id'],
             $data['name'],
             $slug,
@@ -87,33 +88,27 @@ class Product extends Model
             $data['stock'],
             $data['weight'],
             $image,
-            1
-
+            (int) ($data['is_active'] ?? 1)
         ]);
-
     }
 
     public function updateProduct($id, $data, $file)
     {
-
         $produk = $this->find($id);
-
-        if(!$produk){
+        if (!$produk) {
             return false;
         }
 
         $gambar = $produk['image'];
 
-        if($file['image']['error']==0){
-
-            if(file_exists("../storage/produk/".$gambar)){
-
-                unlink("../storage/produk/".$gambar);
-
+        if (($file['image']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+            $newImage = $this->uploadImage($file);
+            if ($newImage === false) {
+                return false;
             }
 
-            $gambar = $this->uploadImage($file);
-
+            $this->deleteImageFile($gambar);
+            $gambar = $newImage;
         }
 
         $slug = $this->createSlug($data['name']);
@@ -135,7 +130,6 @@ class Product extends Model
         $stmt = $this->db->getConnection()->prepare($sql);
 
         return $stmt->execute([
-
             $data['category_id'],
             $data['name'],
             $slug,
@@ -144,35 +138,19 @@ class Product extends Model
             $data['stock'],
             $data['weight'],
             $gambar,
-            $data['is_active'],
+            (int) ($data['is_active'] ?? 1),
             $id
-
         ]);
-
     }
 
     public function deleteProduct($id)
     {
-
         $produk = $this->find($id);
-
-        if(!$produk){
-
+        if (!$produk) {
             return false;
-
         }
 
-        if($produk['image'] != ""){
-
-            $path = "../storage/produk/".$produk['image'];
-
-            if(file_exists($path)){
-
-                unlink($path);
-
-            }
-
-        }
+        $this->deleteImageFile($produk['image'] ?? '');
 
         $stmt = $this->db->getConnection()->prepare("
             DELETE FROM products
@@ -180,68 +158,65 @@ class Product extends Model
         ");
 
         return $stmt->execute([$id]);
-
     }
 
     private function uploadImage($file)
     {
+        if (!isset($file['image'])) {
+            return null;
+        }
 
-        if($file['image']['error'] != 0){
+        if (($file['image']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            return null;
+        }
 
+        if (($file['image']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
             return false;
-
         }
 
         $nama = $file['image']['name'];
         $tmp = $file['image']['tmp_name'];
         $size = $file['image']['size'];
+        $ext = strtolower(pathinfo($nama, PATHINFO_EXTENSION));
 
-        $ext = strtolower(pathinfo($nama,PATHINFO_EXTENSION));
-
-        $allow = [
-
-            'jpg',
-            'jpeg',
-            'png',
-            'webp'
-
-        ];
-
-        if(!in_array($ext,$allow)){
-
+        if (!in_array($ext, ALLOWED_EXTENSIONS, true)) {
             return false;
-
         }
 
-        if($size > 2097152){
-
+        if ($size > 2097152) {
             return false;
-
         }
 
-        $newName = uniqid().".".$ext;
+        if (!is_dir(UPLOAD_PATH) && !mkdir(UPLOAD_PATH, 0775, true) && !is_dir(UPLOAD_PATH)) {
+            return false;
+        }
 
-        move_uploaded_file(
+        $newName = uniqid('', true) . "." . $ext;
 
-            $tmp,
-
-            "../storage/produk/".$newName
-
-        );
+        if (!move_uploaded_file($tmp, UPLOAD_PATH . $newName)) {
+            return false;
+        }
 
         return $newName;
-
     }
 
     private function createSlug($text)
     {
-
         $text = strtolower($text);
+        $text = preg_replace('/[^a-z0-9]+/', '-', $text);
 
-        $text = preg_replace('/[^a-z0-9]+/','-',$text);
-
-        return trim($text,'-');
-
+        return trim($text, '-');
     }
 
+    private function deleteImageFile(?string $filename): void
+    {
+        if (empty($filename)) {
+            return;
+        }
+
+        $path = UPLOAD_PATH . $filename;
+        if (is_file($path)) {
+            unlink($path);
+        }
+    }
 }
