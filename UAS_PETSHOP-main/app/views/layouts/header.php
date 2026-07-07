@@ -54,6 +54,7 @@ if ($isLoggedIn) {
                             <span class="nav-badge"><?= $cartCount ?></span>
                         <?php endif; ?>
                     </a>
+                    <a class="<?= strpos($currentUrl, 'order') === 0 ? 'is-active' : '' ?>" href="<?= BASE_URL ?>index.php?url=order">Pesanan</a>
                     <span class="navbar-user">Hi, <?= htmlspecialchars($_SESSION['user_name']) ?></span>
                     <a class="btn-logout" href="<?= BASE_URL ?>index.php?url=auth/logout">Logout</a>
                 <?php else: ?>

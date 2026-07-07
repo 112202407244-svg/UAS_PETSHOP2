@@ -21,10 +21,14 @@ class Order extends Model
     public function getByUser($userId)
     {
         $stmt = $this->db->getConnection()->prepare("
-            SELECT *
-            FROM orders
-            WHERE user_id = ?
-            ORDER BY created_at DESC
+            SELECT
+                o.*,
+                u.name AS customer
+            FROM orders o
+            JOIN users u
+                ON o.user_id = u.id
+            WHERE o.user_id = ?
+            ORDER BY o.created_at DESC
         ");
 
         $stmt->execute([$userId]);
@@ -53,9 +57,13 @@ class Order extends Model
     public function getDetails($orderId)
     {
         $stmt = $this->db->getConnection()->prepare("
-            SELECT *
-            FROM order_details
-            WHERE order_id = ?
+            SELECT
+                od.*,
+                p.image
+            FROM order_details od
+            LEFT JOIN products p
+                ON od.product_id = p.id
+            WHERE od.order_id = ?
         ");
 
         $stmt->execute([$orderId]);

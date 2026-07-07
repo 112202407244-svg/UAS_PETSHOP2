@@ -14,13 +14,17 @@ $menus = [
         'label' => 'Keranjang',
         'url' => 'cart',
     ],
+    [
+        'label' => 'Pesanan',
+        'url' => 'order',
+    ],
 ];
 ?>
 
 <aside class="sidebar">
     <div class="sidebar-card">
         <div class="sidebar-title">Admin Panel</div>
-        <div class="sidebar-subtitle">Kelola data toko, kategori, dan keranjang.</div>
+        <div class="sidebar-subtitle">Kelola data toko, kategori, keranjang, dan pesanan.</div>
     </div>
 
     <nav class="sidebar-nav">
